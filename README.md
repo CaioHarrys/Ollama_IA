@@ -29,8 +29,8 @@ Com este script, você pode enviar perguntas ou comandos para um modelo AI rodan
 
 ### 📥 Clone o repositório:
 
-git clone https://github.com/CaioHarrys/Ollama_IA.git
-cd Ollama_IA
+`git clone https://github.com/CaioHarrys/Ollama_IA.git`
+`cd Ollama_IA`
 
 ## 📦 Instale as dependências:
 - `pip install -r requirements.txt`
@@ -44,10 +44,10 @@ cd Ollama_IA
 
 🔸 A mensagem ou comando que será enviado ao modelo.
 ## 🎯 Exemplo:
-`model = "llama3"`
-`prompt = "Explique o que é aprendizado de máquina de forma simples."`
-`response = chat_with_ollama(model, prompt)`
-`print(response)`
+- `model = "llama3"`
+- `prompt = "Explique o que é aprendizado de máquina de forma simples."`
+- `response = chat_with_ollama(model, prompt)`
+- `print(response)`
 ## 💡 Funcionalidades
 - ✅ Envio de prompts para modelos locais.
 
