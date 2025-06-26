@@ -4,69 +4,74 @@ import datetime
 import wikipedia
 import pywhatkit
 
+# Inicializa os módulos
 ouvido = sr.Recognizer()
 yoda = pyttsx3.init()
 
-def executar_comando():
-    try:
-        with sr.Microphone() as mic:
-            print("Estou ouvindo...")
-            voz = ouvido.listen(mic)
-            comando = ouvido.recognize_google(voz, language="pt-BR")
-            comando = comando.lower()  # Converte o comando para minúsculas
 
-            if 'lula' in comando:
-                comando = comando.replace('lula', '')
-                yoda.say(comando)
-                yoda.runAndWait()
-           
-    except sr.UnknownValueError:
-        print("Desculpe, não consegui entender o que você disse.")
-    except sr.RequestError:
-        print("Erro ao se conectar com o serviço de reconhecimento de voz.")
+def falar(frase):
+    print(f"{frase}")
+    yoda.say(frase)
+    yoda.runAndWait()
 
-    return comando
 
-def realizar_acao():
-    comando = executar_comando()
+def executar_comando(comando):
+    comando = comando.lower().replace("lula", "").strip()
 
-    if not comando:
-        return
-
-    if 'parar' in comando:
-        yoda.say("Encerrando por agora. Que a Força esteja com você.")
-        yoda.runAndWait()
+    if "encerrar" in comando:
+        falar("Encerrando por agora. Que a Força esteja com você.")
         exit()
 
-    elif 'horas' in comando:
+    elif "horas" in comando:
         hora = datetime.datetime.now().strftime("%H:%M")
-        yoda.say(f"A hora atual é {hora}")
-    
-    elif 'data' in comando:
-        data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
-        yoda.say(f"A data de hoje é {data_atual}")
+        falar(f"A hora atual é {hora}")
 
-    elif 'pesquise' in comando:
-        pesquisa = comando.replace('pesquise', '')
+    elif "data" in comando:
+        data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
+        falar(f"A data de hoje é {data_atual}")
+
+    elif "pesquise" in comando:
+        pesquisa = comando.replace("pesquise", "")
         wikipedia.set_lang("pt")
         try:
             resposta = wikipedia.summary(pesquisa, 2)
             print(resposta)
-            yoda.say(resposta)
-        except Exception as e:
-            yoda.say("Não consegui encontrar nada sobre isso.")
-            
-    elif 'tocar' in comando:
-        conteudo = comando.replace('tocar', '')
+            falar(resposta)
+        except:
+            falar("Não consegui encontrar nada sobre isso.")
+    elif comando:
+        falar("Desculpe, não entendi o comando.")
+    elif "tocar" in comando:
+        conteudo = comando.replace("tocar", "").strip()
         resposta = pywhatkit.playonyt(conteudo)
-        yoda.say(f"Tocando {conteudo} no YouTube.")
+        yoda.say(resposta)
         yoda.runAndWait()
-    
-    else:
-        yoda.say("Desculpe, não entendi o comando.")
 
-    yoda.runAndWait()
-# Execução contínua do assistente
+
+def ouvir():
+    with sr.Microphone() as mic:
+        ouvido.adjust_for_ambient_noise(mic)  # Ajusta para o ruído do ambiente
+        print("🎙️ Aguardando comando com 'lula'...")
+
+        try:
+            audio = ouvido.listen(mic, timeout=None, phrase_time_limit=5)
+            comando = ouvido.recognize_google(audio, language="pt-BR").lower()
+            print(f"{comando}")
+
+            if "lula" in comando:
+                executar_comando(comando)
+            else:
+                print("🔇 Palavra-chave não detectada. Ignorando...")
+
+        except sr.UnknownValueError:
+            print("🤷‍♂️ Não entendi o que você disse.")
+        except sr.RequestError:
+            print("❌ Erro ao acessar o serviço de voz.")
+        except Exception as e:
+            print(f"⚠️ Erro inesperado: {e}")
+
+
+# LOOP INFINITO
 if __name__ == "__main__":
     while True:
-        realizar_acao()
+        ouvir()
