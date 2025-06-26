@@ -1,37 +1,54 @@
-import pyttsx3
 import speech_recognition as sr
+import pyttsx3
+import datetime
+import wikipedia
 
-ouvido = sr.Recognizer() # Inicializa o reconhecedor de voz
-voz = pyttsx3.init() # Inicializa o sintetizador de voz
+ouvido = sr.Recognizer()
+yoda = pyttsx3.init()
 
-def falar(texto):
-    print(f"Falando: {texto}") # Exibir o texto que será falado
-    voz.say(texto) # Dizer o texto
-    voz.runAndWait() # Rodar a fala e esperar até que termine
+def executar_comando():
+    try:
+        with sr.Microphone() as mic:
+            print("Estou ouvindo...")
+            voz = ouvido.listen(mic)
+            comando = ouvido.recognize_google(voz, language="pt-BR")
+            comando = comando.lower()  # Converte o comando para minúsculas
 
-def ouvir(): # Função para ouvir o comando de voz
-    with sr.Microphone() as mic:
-        print("Estou ouvindo...")
-        ouvido.listen(mic)
-        audio = ouvido.listen(mic)
-        try:
-            comando = ouvido.recognize_google(audio, language='pt-BR')
-            print(f'Você disse: {comando}')
-            return comando.lower()
-        except sr.UnknownValueError:
-            print("Não entendi o que você disse.")
-            falar("Desculpe, não consegui entender o que você disse.")
-            return ""
-        except sr.RequestError:
-            print("Erro ao se conectar ao serviço de reconhecimento de voz.")
-            falar("Desculpe, houve um erro ao tentar reconhecer sua fala.")
-            return ""
+            if 'Lula' in comando:
+                comando = comando.replace('Lula', '')
+                yoda.say(comando)
+                yoda.runAndWait()
+           
+    except sr.UnknownValueError:
+        print("Desculpe, não consegui entender o que você disse.")
+    except sr.RequestError:
+        print("Erro ao se conectar com o serviço de reconhecimento de voz.")
 
-# falar("Olá, eu sou o Yoda, seu assistente virtual. Como posso ajudar?") # Fala inicial
+    return comando
 
-# ouvir() # Chama a função para ouvir o comando de voz
+def realizar_acao():
+    comando = executar_comando()
 
-# Aqui você pode adicionar lógica para processar o comando recebido
-# Por exemplo, se o comando for "olá", você pode responder com uma saudação
-# if "olá" in comando:
-#     falar("Olá! Como posso ajudar você hoje?")
+    if 'horas' in comando:
+        hora = datetime.datetime.now().strftime("%H:%M")
+        yoda.say(f"A hora atual é {hora} seu pedaço de merda mole")
+    elif 'data' in comando:
+        data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
+        yoda.say(f"A data de hoje é {data_atual}")
+    elif 'pesquise' in comando:
+        pesquisa = comando.replace('pesquise', '')
+        wikipedia.set_lang("pt")
+        resposta = wikipedia.summary(pesquisa, 2)
+        print(resposta)
+        yoda.say(resposta)
+        yoda.runAndWait()
+    elif comando:
+        yoda.say("Desculpe, não entendi o comando.")
+    else:
+        print("Nenhum comando reconhecido.")
+
+    yoda.runAndWait()
+
+# Exemplo de execução contínua
+# while True:
+realizar_acao()
