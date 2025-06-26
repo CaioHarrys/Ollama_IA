@@ -2,7 +2,6 @@ import speech_recognition as sr
 import pyttsx3
 import datetime
 import wikipedia
-import pywhatkit
 
 ouvido = sr.Recognizer()
 yoda = pyttsx3.init()
@@ -15,8 +14,8 @@ def executar_comando():
             comando = ouvido.recognize_google(voz, language="pt-BR")
             comando = comando.lower()  # Converte o comando para minúsculas
 
-            if 'lula' in comando:
-                comando = comando.replace('lula', '')
+            if 'Lula' in comando:
+                comando = comando.replace('Lula', '')
                 yoda.say(comando)
                 yoda.runAndWait()
            
@@ -30,43 +29,28 @@ def executar_comando():
 def realizar_acao():
     comando = executar_comando()
 
-    if not comando:
-        return
-
-    if 'parar' in comando:
-        yoda.say("Encerrando por agora. Que a Força esteja com você.")
-        yoda.runAndWait()
-        exit()
-
-    elif 'horas' in comando:
+    if 'horas' in comando:
         hora = datetime.datetime.now().strftime("%H:%M")
-        yoda.say(f"A hora atual é {hora}")
-    
+        yoda.say(f"A hora atual é {hora} seu pedaço de merda mole")
+        yoda.runAndWait()
     elif 'data' in comando:
         data_atual = datetime.datetime.now().strftime("%d/%m/%Y")
         yoda.say(f"A data de hoje é {data_atual}")
-
+        yoda.runAndWait()
     elif 'pesquise' in comando:
         pesquisa = comando.replace('pesquise', '')
         wikipedia.set_lang("pt")
-        try:
-            resposta = wikipedia.summary(pesquisa, 2)
-            print(resposta)
-            yoda.say(resposta)
-        except Exception as e:
-            yoda.say("Não consegui encontrar nada sobre isso.")
-            
-    elif 'tocar' in comando:
-        conteudo = comando.replace('tocar', '')
-        resposta = pywhatkit.playonyt(conteudo)
-        yoda.say(f"Tocando {conteudo} no YouTube.")
+        resposta = wikipedia.summary(pesquisa, 2)
+        print(resposta)
+        yoda.say(resposta)
         yoda.runAndWait()
-    
-    else:
+    elif comando:
         yoda.say("Desculpe, não entendi o comando.")
+    else:
+        print("Nenhum comando reconhecido.")
 
     yoda.runAndWait()
-# Execução contínua do assistente
-if __name__ == "__main__":
-    while True:
-        realizar_acao()
+
+# Exemplo de execução contínua
+# while True:
+realizar_acao()
